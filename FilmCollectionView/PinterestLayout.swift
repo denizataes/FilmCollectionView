@@ -22,11 +22,11 @@ class PinterestLayout: UICollectionViewLayout
     var numberOfColumns: CGFloat = 2
     var cellPadding: CGFloat = 5.0
     
-    private var contentHeight: CGFloat = 0.0
+    private var contentHeight: CGFloat = 0.0 // henüz bilmiyoz
     private var contentWidth: CGFloat {
         let insets = collectionView!.contentInset
         return (collectionView!.bounds.width - (insets.left + insets.right))
-    }
+    } // yanlarda çok ufak bir boşluk var onları çıkartıp collectionview ın widthini hesaplıyoruz
     
     private var attributesCache = [PinterestLayoutAttributes]()
     
@@ -49,6 +49,7 @@ class PinterestLayout: UICollectionViewLayout
                 let width = columnWidth - cellPadding * 2
 
                 let photoHeight: CGFloat = (delegate?.collectionView(collectionView: collectionView!, heightForPhotoAt: indexPath, with: width))!
+                
                 let captionHeight: CGFloat = (delegate?.collectionView(collectionView: collectionView!, heightForCaptionAt: indexPath, with: width))!
                 
                 let height: CGFloat = cellPadding + photoHeight + captionHeight + cellPadding
