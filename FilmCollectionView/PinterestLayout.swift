@@ -20,7 +20,7 @@ class PinterestLayout: UICollectionViewLayout
     var delegate: PinterestLayoutDelegate?
     
     var numberOfColumns: CGFloat = 2
-    var cellPadding: CGFloat = 2.5
+    var cellPadding: CGFloat = 5
     
     private var contentHeight: CGFloat = 0.0
     private var contentWidth: CGFloat {
