@@ -11,7 +11,7 @@ struct TrendingMoviesResponse: Codable {
     let results: [Movie]
 }
 
-// MARK: - Welcome
+// MARK: - Movie
 struct Movie: Codable {
     let adult: Bool?
     let backdropPath: String?

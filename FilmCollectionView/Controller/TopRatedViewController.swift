@@ -11,6 +11,7 @@ import UIKit
 import Kingfisher
 class TopRatedViewController: UIViewController, UICollectionViewDelegate {
     
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var collectionView: UICollectionView!
     var topRatedList: [Movie]?
 
@@ -18,7 +19,7 @@ class TopRatedViewController: UIViewController, UICollectionViewDelegate {
         super.viewDidLoad()
         configure()
         
-        navigationController?.navigationBar.barTintColor = .systemBrown
+        navigationController?.navigationBar.barTintColor = .systemYellow
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.topItem?.title = "En Beğenilenler 💯"
         collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
@@ -31,6 +32,7 @@ class TopRatedViewController: UIViewController, UICollectionViewDelegate {
         }
     
     private func configure() {
+        activityIndicator.startAnimating()
         collectionView.delegate = self
         collectionView.dataSource = self
         APICaller.shared.getTopRated { result in
@@ -39,20 +41,17 @@ class TopRatedViewController: UIViewController, UICollectionViewDelegate {
                 self.topRatedList = titles
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
-                   // self.activityIndicator.stopAnimating()
+                    self.activityIndicator.stopAnimating()
                 }
 
             case .failure(let error):
-               // self.activityIndicator.stopAnimating()
+                self.activityIndicator.stopAnimating()
                 print(error.localizedDescription)
             }
         }
     }
-
-
 }
-//MovieCollectionViewCell
-//
+
 extension TopRatedViewController: UICollectionViewDataSource
 {
      func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -67,13 +66,20 @@ extension TopRatedViewController: UICollectionViewDataSource
     {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCollectionViewCell", for: indexPath) as! MovieCollectionViewCell
         let movie = self.topRatedList?[indexPath.row]
-        cell.imageView.image = UIImage(named: movie?.posterPath ?? "")
-        cell.imageView.kf.setImage(with: URL(string: "\(Constants.imageURL)\(movie?.posterPath ?? "")"),placeholder: nil,options: [.transition(.fade(0.7))])
-        
-//        cell.durationLabel.text = String(movie?.runtime ?? 0)
+
+        cell.imageView.kf.setImage(with: URL(string: "\(Constants.imageURL)\(movie?.posterPath ?? "")")) { result in
+            switch result {
+            case .success(let value):
+                let averageColor = value.image.averageColor
+                let opaqueColor = averageColor?.withAlphaComponent(0.7)
+                cell.contentView.backgroundColor = opaqueColor
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+        }
         cell.overviewLabel.text = movie?.overview ?? ""
         cell.titleLabel.text = movie?.title ?? ""
-        cell.releaseDateLabel.text = movie?.releaseDate ?? ""
+        cell.releaseDateLabel.text = Helper.shared.convertDate(dateString: movie?.releaseDate)
         return cell
     }
 }
@@ -82,16 +88,7 @@ extension TopRatedViewController : PinterestLayoutDelegate
 {
     func collectionView(collectionView: UICollectionView, heightForPhotoAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
     {
-        if let post = self.topRatedList?[indexPath.item], let photoURL = UIImage(named: "avatar") {
-           // var imageView = UIImageView()
-            //imageView.kf.setImage(with: photoURL)
-            let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
-            let rect = AVMakeRect(aspectRatio: photoURL.size, insideRect: boundingRect)
-
-            return rect.size.height
-        }
-
-        return 0
+        return 280
     }
 
     func collectionView(collectionView: UICollectionView, heightForCaptionAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
@@ -100,8 +97,8 @@ extension TopRatedViewController : PinterestLayoutDelegate
             let topPadding = CGFloat(12)
             let bottomPadding = CGFloat(12)
             let captionFont = UIFont.systemFont(ofSize: 10)
-            let captionHeight = self.height(for: post.overview!, with: captionFont, width: width)
-            let height = topPadding + captionHeight + topPadding  + bottomPadding + 80
+            let captionHeight = Helper.shared.height(for: post.overview!, with: captionFont, width: width)
+            let height = topPadding + captionHeight + topPadding  + bottomPadding + captionHeight + 4
 
             return height
         }
@@ -109,14 +106,7 @@ extension TopRatedViewController : PinterestLayoutDelegate
         return 0.0
     }
 
-    func height(for text: String, with font: UIFont, width: CGFloat) -> CGFloat
-    {
-        let nsstring = NSString(string: text)
-        let maxHeight = CGFloat(MAXFLOAT)//değiştirirsen maximumu artar
-        let textAttributes = [NSAttributedString.Key.font : font]
-        let boundingRect = nsstring.boundingRect(with: CGSize(width: width, height: maxHeight), options: .usesLineFragmentOrigin, attributes: textAttributes, context: nil)
-        return ceil(boundingRect.height)
-    }
+
 }
 
 

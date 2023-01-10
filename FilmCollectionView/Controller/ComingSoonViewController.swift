@@ -1,44 +1,42 @@
 //
-//  ViewController.swift
+//  ComingSoonViewController.swift
 //  FilmCollectionView
 //
-//  Created by Deniz Ata Eş on 9.01.2023.
+//  Created by Deniz Ata Eş on 10.01.2023.
 //
-import AVKit
-import AVFoundation
-import UIKit
-import Kingfisher
 
-class PopularViewController: UIViewController, UICollectionViewDelegate {
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    var trendingMovieList: [Movie]?
+import UIKit
+
+class ComingSoonViewController: UIViewController, UICollectionViewDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    var comingSoonList: [Movie]?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        activityIndicator.startAnimating()
-        // MARK: NavigationController
-        navigationController?.navigationBar.topItem?.title = "Popüler 🔥"
-        navigationController?.navigationBar.barTintColor = .systemBrown
-        navigationController?.navigationBar.prefersLargeTitles = true
-        collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
+        configure()
         
+        navigationController?.navigationBar.barTintColor = .systemPink
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.topItem?.title = "Yakında ⌛️"
+        collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             self.configure()
         }
-        
         if let layout = collectionView?.collectionViewLayout as? PinterestLayout {
             layout.delegate = self
         }
-        
     }
     
     private func configure() {
+        activityIndicator.startAnimating()
         collectionView.delegate = self
         collectionView.dataSource = self
-        APICaller.shared.getTrendingMovies { result in
+        APICaller.shared.getUpcomingMovies { result in
             switch result {
             case .success(let titles):
-                self.trendingMovieList = titles
+                self.comingSoonList = titles
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
                     self.activityIndicator.stopAnimating()
@@ -50,27 +48,25 @@ class PopularViewController: UIViewController, UICollectionViewDelegate {
             }
         }
     }
-
-
+    
 }
 
-//MovieCollectionViewCell
 
-extension PopularViewController: UICollectionViewDataSource
+
+extension ComingSoonViewController: UICollectionViewDataSource
 {
      func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if let posts = trendingMovieList {
+        if let posts = comingSoonList {
             return posts.count
         } else {
             return 0
         }
     }
-    
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCollectionViewCell", for: indexPath) as! MovieCollectionViewCell
-        let movie = self.trendingMovieList?[indexPath.row]
+        let movie = self.comingSoonList?[indexPath.row]
 
         cell.imageView.kf.setImage(with: URL(string: "\(Constants.imageURL)\(movie?.posterPath ?? "")")) { result in
             switch result {
@@ -89,26 +85,16 @@ extension PopularViewController: UICollectionViewDataSource
     }
 }
 
-extension PopularViewController : PinterestLayoutDelegate
+extension ComingSoonViewController : PinterestLayoutDelegate
 {
     func collectionView(collectionView: UICollectionView, heightForPhotoAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
     {
-//        if let post = self.trendingMovieList?[indexPath.item], let photoURL = UIImage(named: "avatar") {
-//           // var imageView = UIImageView()
-//            //imageView.kf.setImage(with: photoURL)
-//            let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
-//            let rect = AVMakeRect(aspectRatio: photoURL.size, insideRect: boundingRect)
-//
-//            return rect.size.height
-//        }
-//
-//        return 0
         return 280
     }
 
     func collectionView(collectionView: UICollectionView, heightForCaptionAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
     {
-        if let post = trendingMovieList?[indexPath.item] {
+        if let post = comingSoonList?[indexPath.item] {
             let topPadding = CGFloat(12)
             let bottomPadding = CGFloat(12)
             let captionFont = UIFont.systemFont(ofSize: 10)
@@ -120,4 +106,6 @@ extension PopularViewController : PinterestLayoutDelegate
 
         return 0.0
     }
+
+
 }

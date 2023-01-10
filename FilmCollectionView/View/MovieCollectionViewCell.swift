@@ -10,7 +10,7 @@ import Kingfisher
 
 class MovieCollectionViewCell: UICollectionViewCell {
 
-//    @IBOutlet weak var durationLabel: UILabel!
+    //    @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var releaseDateLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
@@ -28,10 +28,17 @@ class MovieCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         imageView.kf.indicatorType = .activity
+        configureView()
         configurePhotoView()
     }
     private func configurePhotoView(){
         imageView.layer.cornerRadius = 10
         imageView.layer.shadowRadius = 10
+    }
+    
+    private func configureView(){
+        contentView.layer.cornerRadius = 10
+        contentView.layer.masksToBounds = true
+
     }
 }
