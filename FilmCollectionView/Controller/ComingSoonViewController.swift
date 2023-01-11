@@ -8,31 +8,47 @@
 import UIKit
 
 class ComingSoonViewController: UIViewController, UICollectionViewDelegate {
+    //MARK: Defining properties
     @IBOutlet weak var collectionView: UICollectionView!
-    
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     var comingSoonList: [Movie]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configure()
+            configure()
+    }
+    
+    private func configure() {
+        configureNavBar()
+        configureDelegates()
+        collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
+        self.activityIndicator.startAnimating()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            self.getUpcomingMovies()
+        }
+
+    }
+    
+    private func configureNavBar(){
+        // MARK: Defining NavigationController
         
         navigationController?.navigationBar.barTintColor = .systemPink
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.topItem?.title = "Yakında ⌛️"
-        collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            self.configure()
-        }
+    }
+    
+    private func configureDelegates(){
+        // MARK: Defining Delegates
+
+        collectionView.delegate = self
+        collectionView.dataSource = self
         if let layout = collectionView?.collectionViewLayout as? PinterestLayout {
             layout.delegate = self
         }
     }
     
-    private func configure() {
-        activityIndicator.startAnimating()
-        collectionView.delegate = self
-        collectionView.dataSource = self
+    private func getUpcomingMovies(){
+        // MARK: Fetching upcoming movies from the API
         APICaller.shared.getUpcomingMovies { result in
             switch result {
             case .success(let titles):
@@ -53,8 +69,9 @@ class ComingSoonViewController: UIViewController, UICollectionViewDelegate {
 
 
 
-extension ComingSoonViewController: UICollectionViewDataSource
-{
+extension ComingSoonViewController: UICollectionViewDataSource {
+    //MARK: CollectionView Datasource methods
+
      func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if let posts = comingSoonList {
             return posts.count
@@ -67,7 +84,8 @@ extension ComingSoonViewController: UICollectionViewDataSource
     {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCollectionViewCell", for: indexPath) as! MovieCollectionViewCell
         let movie = self.comingSoonList?[indexPath.row]
-
+        
+        ///first download the photo from the API, then detect the average colors of the photo and set it to the cell background
         cell.imageView.kf.setImage(with: URL(string: "\(Constants.imageURL)\(movie?.posterPath ?? "")")) { result in
             switch result {
             case .success(let value):
@@ -85,27 +103,20 @@ extension ComingSoonViewController: UICollectionViewDataSource
     }
 }
 
-extension ComingSoonViewController : PinterestLayoutDelegate
-{
-    func collectionView(collectionView: UICollectionView, heightForPhotoAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
-    {
+extension ComingSoonViewController : PinterestLayoutDelegate {
+    // MARK: implemented PinterestLayoutDelegate
+
+    func collectionView(collectionView: UICollectionView, heightForPhotoAt indexPath: IndexPath, with width: CGFloat) -> CGFloat {
         return 280
     }
 
-    func collectionView(collectionView: UICollectionView, heightForCaptionAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
-    {
+    func collectionView(collectionView: UICollectionView, heightForCaptionAt indexPath: IndexPath, with width: CGFloat) -> CGFloat {
         if let post = comingSoonList?[indexPath.item] {
-            let topPadding = CGFloat(12)
-            let bottomPadding = CGFloat(12)
             let captionFont = UIFont.systemFont(ofSize: 10)
             let captionHeight = Helper.shared.height(for: post.overview!, with: captionFont, width: width)
-            let height = topPadding + captionHeight + topPadding  + bottomPadding + captionHeight + 4
-
+            let height = (captionHeight * 2) + 32
             return height
         }
-
         return 0.0
     }
-
-
 }

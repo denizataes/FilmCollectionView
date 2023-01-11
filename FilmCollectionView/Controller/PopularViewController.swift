@@ -10,32 +10,51 @@ import UIKit
 import Kingfisher
 
 class PopularViewController: UIViewController, UICollectionViewDelegate {
+    //MARK: Defining properties
+    
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    var trendingMovieList: [Movie]?
     @IBOutlet weak var collectionView: UICollectionView!
+    var trendingMovieList: [Movie]?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        configure()
+    }
+    
+    private func configure() {
+        configureNavBar()
+        configureDelegates()
+        collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
         activityIndicator.startAnimating()
-        // MARK: NavigationController
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            self.getTrendingMovies()
+        }
+    }
+    
+    private func configureNavBar(){
+        // MARK: Defining NavigationController
+        
         navigationController?.navigationBar.topItem?.title = "Popüler 🔥"
         navigationController?.navigationBar.barTintColor = .systemBrown
         navigationController?.navigationBar.prefersLargeTitles = true
-        collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
+
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            self.configure()
-        }
+    }
+    
+    private func configureDelegates(){
+        // MARK: Defining Delegates
         
         if let layout = collectionView?.collectionViewLayout as? PinterestLayout {
             layout.delegate = self
         }
-        
-    }
-    
-    private func configure() {
         collectionView.delegate = self
         collectionView.dataSource = self
-        APICaller.shared.getTrendingMovies { result in
+    }
+
+    private func getTrendingMovies() {
+        // MARK: Fetching popular movies from the API
+        
+        APICaller.shared.getPopular { result in
             switch result {
             case .success(let titles):
                 self.trendingMovieList = titles
@@ -50,14 +69,11 @@ class PopularViewController: UIViewController, UICollectionViewDelegate {
             }
         }
     }
-
-
 }
 
-//MovieCollectionViewCell
-
-extension PopularViewController: UICollectionViewDataSource
-{
+extension PopularViewController: UICollectionViewDataSource {
+    //MARK: CollectionView Datasource methods
+    
      func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if let posts = trendingMovieList {
             return posts.count
@@ -67,11 +83,11 @@ extension PopularViewController: UICollectionViewDataSource
     }
     
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
-    {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCollectionViewCell", for: indexPath) as! MovieCollectionViewCell
         let movie = self.trendingMovieList?[indexPath.row]
-
+        
+        ///first download the photo from the API, then detect the average colors of the photo and set it to the cell background
         cell.imageView.kf.setImage(with: URL(string: "\(Constants.imageURL)\(movie?.posterPath ?? "")")) { result in
             switch result {
             case .success(let value):
@@ -89,32 +105,18 @@ extension PopularViewController: UICollectionViewDataSource
     }
 }
 
-extension PopularViewController : PinterestLayoutDelegate
-{
-    func collectionView(collectionView: UICollectionView, heightForPhotoAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
-    {
-//        if let post = self.trendingMovieList?[indexPath.item], let photoURL = UIImage(named: "avatar") {
-//           // var imageView = UIImageView()
-//            //imageView.kf.setImage(with: photoURL)
-//            let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
-//            let rect = AVMakeRect(aspectRatio: photoURL.size, insideRect: boundingRect)
-//
-//            return rect.size.height
-//        }
-//
-//        return 0
+extension PopularViewController : PinterestLayoutDelegate {
+    // MARK: implemented PinterestLayoutDelegate
+    
+    func collectionView(collectionView: UICollectionView, heightForPhotoAt indexPath: IndexPath, with width: CGFloat) -> CGFloat {
         return 280
     }
 
-    func collectionView(collectionView: UICollectionView, heightForCaptionAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
-    {
+    func collectionView(collectionView: UICollectionView, heightForCaptionAt indexPath: IndexPath, with width: CGFloat) -> CGFloat {
         if let post = trendingMovieList?[indexPath.item] {
-            let topPadding = CGFloat(12)
-            let bottomPadding = CGFloat(12)
             let captionFont = UIFont.systemFont(ofSize: 10)
             let captionHeight = Helper.shared.height(for: post.overview!, with: captionFont, width: width)
-            let height = topPadding + captionHeight + topPadding  + bottomPadding + captionHeight + 4
-
+            let height = (captionHeight * 2) + 32
             return height
         }
 

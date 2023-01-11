@@ -8,16 +8,34 @@
 import UIKit
 
 class SearchViewController: UIViewController, UICollectionViewDelegate {
+    //MARK: Defining properties
     var searchList: [Movie]?
     let searchController = UISearchController()
-    
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var collectionView: UICollectionView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.activityIndicator.stopAnimating()
+        
         //MARK: SearchController
-        navigationItem.searchController = searchController
+        configureNavBar()
+        configureSearchBar()
+        configureDelegates()
+    }
+    
+    private func configureDelegates(){
+        // MARK: Defining Delegates
+
+        collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        if let layout = collectionView?.collectionViewLayout as? PinterestLayout {
+            layout.delegate = self
+        }
+    }
+    
+    private func configureSearchBar(){
+        // MARK: Defining SearchController
 
         searchController.loadViewIfNeeded()
         searchController.searchResultsUpdater = self
@@ -26,31 +44,24 @@ class SearchViewController: UIViewController, UICollectionViewDelegate {
         searchController.searchBar.returnKeyType = UIReturnKeyType.done
         searchController.searchBar.delegate = self
         searchController.searchBar.setValue("İptal", forKey: "cancelButtonText")
-        searchController.searchBar.placeholder = "Ara..."
+        searchController.searchBar.placeholder = "Film Ara... 🍿🎬"
+    }
+    
+    private func configureNavBar(){
+        // MARK: Defining NavigationController
+
+        navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         navigationController?.navigationBar.barTintColor = .systemGreen
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.topItem?.title = "Ara 🎬"
-        configure()
-        
-        collectionView?.contentInset = UIEdgeInsets(top: 12, left: 4, bottom: 12, right: 4)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            self.configure()
-        }
-        if let layout = collectionView?.collectionViewLayout as? PinterestLayout {
-            layout.delegate = self
-        }
+        navigationController?.navigationBar.topItem?.title = "Ara 👀"
     }
-    
-    private func configure() {
-        collectionView.delegate = self
-        collectionView.dataSource = self
-    }
-
 }
 
 extension SearchViewController: UICollectionViewDataSource
 {
+    //MARK: CollectionView Datasource methods
+
      func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if let posts = searchList {
             return posts.count
@@ -83,8 +94,9 @@ extension SearchViewController: UICollectionViewDataSource
 
 extension SearchViewController : PinterestLayoutDelegate
 {
-    func collectionView(collectionView: UICollectionView, heightForPhotoAt indexPath: IndexPath, with width: CGFloat) -> CGFloat
-    {
+    // MARK: implemented PinterestLayoutDelegate
+
+    func collectionView(collectionView: UICollectionView, heightForPhotoAt indexPath: IndexPath, with width: CGFloat) -> CGFloat {
         return 280
     }
 
@@ -109,14 +121,14 @@ extension SearchViewController : PinterestLayoutDelegate
 extension SearchViewController: UISearchBarDelegate, UISearchResultsUpdating{
     ///If searchController textfield change then search by query.
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            ///If the search text is empty, clear the array, leave the screen blank
             if searchText.count == 0 {
-                searchList = nil
+                searchList?.removeAll()
                 collectionView.reloadData()
             }
+            ///Don't start searching if it's not higher than 2 letters
             guard searchText.count > 2 else {return}
-            activityIndicator.startAnimating()
-            searchByQuery(query: searchText.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-            collectionView.collectionViewLayout.invalidateLayout()
+            searchByQuery(query: searchText)
         }
     
     
@@ -124,7 +136,8 @@ extension SearchViewController: UISearchBarDelegate, UISearchResultsUpdating{
     
     
     private func searchByQuery(query: String){
-        
+        // MARK: Returns movies based on the search word
+        self.activityIndicator.startAnimating()
         APICaller.shared.search(with: query) { data in
             switch(data)
             {
@@ -142,6 +155,7 @@ extension SearchViewController: UISearchBarDelegate, UISearchResultsUpdating{
         
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        ///if the cancel button is clicked, empty the array, the screen remains blank
         self.searchList?.removeAll()
         self.collectionView.reloadData()
     }

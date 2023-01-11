@@ -388,7 +388,7 @@
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="djL-Nx-iO4">
                                 <rect key="frame" x="0.0" y="103" width="393" height="666"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <collectionViewLayout key="collectionViewLayout" id="zMd-UD-vvS" customClass="PinterestLayout" customModule="FilmCollectionView" customModuleProvider="target"/>
+                                <collectionViewLayout key="collectionViewLayout" id="vfM-Ci-DZo" customClass="PinterestLayout" customModule="FilmCollectionView" customModuleProvider="target"/>
                                 <activityIndicatorView key="backgroundView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" id="h2P-Vq-x2F">
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="666"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>

@@ -78,19 +78,10 @@
 		A064D6E0296C8A3D0035705D /* FilmCollectionView */ = {
 			isa = PBXGroup;
 			children = (
-				A064D6FA296C8AF60035705D /* Service */,
-				A064D6F9296C8AEA0035705D /* Utils */,
+				A064D6EF296C8A3E0035705D /* Info.plist */,
 				A064D6F8296C8AE30035705D /* Model */,
-				A064D6F7296C8ADB0035705D /* ViewModel */,
 				A064D6F6296C8AD60035705D /* View */,
 				A064D6F5296C8AD10035705D /* Controller */,
-				A064D6E1296C8A3D0035705D /* AppDelegate.swift */,
-				A064D6E3296C8A3D0035705D /* SceneDelegate.swift */,
-				A064D6E7296C8A3D0035705D /* Main.storyboard */,
-				A064D6EA296C8A3E0035705D /* Assets.xcassets */,
-				A064D6EC296C8A3E0035705D /* LaunchScreen.storyboard */,
-				A064D6EF296C8A3E0035705D /* Info.plist */,
-				A064D705296C93260035705D /* PinterestLayout.swift */,
 			);
 			path = FilmCollectionView;
 			sourceTree = "<group>";
@@ -102,6 +93,8 @@
 				A064D6FD296C8B6B0035705D /* TopRatedViewController.swift */,
 				A08DD9A1296DDC46009C9031 /* ComingSoonViewController.swift */,
 				A08DD9A3296DE09A009C9031 /* SearchViewController.swift */,
+				A064D6FA296C8AF60035705D /* Service */,
+				A064D6F9296C8AEA0035705D /* Utils */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -109,16 +102,12 @@
 		A064D6F6296C8AD60035705D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				A064D6E7296C8A3D0035705D /* Main.storyboard */,
+				A064D6EC296C8A3E0035705D /* LaunchScreen.storyboard */,
 				A064D703296C91E70035705D /* MovieCollectionViewCell.swift */,
+				A064D705296C93260035705D /* PinterestLayout.swift */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		A064D6F7296C8ADB0035705D /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		A064D6F8296C8AE30035705D /* Model */ = {
@@ -132,6 +121,9 @@
 		A064D6F9296C8AEA0035705D /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				A064D6E1296C8A3D0035705D /* AppDelegate.swift */,
+				A064D6E3296C8A3D0035705D /* SceneDelegate.swift */,
+				A064D6EA296C8A3E0035705D /* Assets.xcassets */,
 				A064D6FF296C8C940035705D /* Constants.swift */,
 				A08DD99B296DC663009C9031 /* Extensions.swift */,
 				A08DD99D296DDAA9009C9031 /* Helper.swift */,

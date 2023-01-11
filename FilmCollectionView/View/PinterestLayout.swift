@@ -1,11 +1,3 @@
-//
-//  PinterestLayout.swift
-//  Pinterest
-//
-//  Created by Duc Tran on 4/3/17.
-//  Copyright © 2017 Developers Academy. All rights reserved.
-//
-
 import UIKit
 
 protocol PinterestLayoutDelegate: AnyObject
@@ -32,7 +24,9 @@ class PinterestLayout: UICollectionViewLayout
     
     override func prepare()
     {
-      //  if attributesCache.isEmpty {
+        attributesCache.removeAll()
+        
+        if attributesCache.isEmpty {
             let columnWidth = contentWidth / numberOfColumns
             var xOffsets = [CGFloat]()
             for column in 0 ..< Int(numberOfColumns) {
@@ -47,7 +41,7 @@ class PinterestLayout: UICollectionViewLayout
                 
                 // calculate the frame
                 let width = columnWidth - cellPadding * 2
-
+                
                 let photoHeight: CGFloat = (delegate?.collectionView(collectionView: collectionView!, heightForPhotoAt: indexPath, with: width))!
                 
                 let captionHeight: CGFloat = (delegate?.collectionView(collectionView: collectionView!, heightForCaptionAt: indexPath, with: width))!
@@ -71,7 +65,7 @@ class PinterestLayout: UICollectionViewLayout
                 } else {
                     column += 1
                 }
-         //   }
+            }
         }
     }
     
