@@ -1,9 +1,3 @@
-//
-//  APICaller.swift
-//  Homework3
-//
-//  Created by Deniz Ata Eş on 8.01.2023.
-//
 import Foundation
 
 class APICaller {

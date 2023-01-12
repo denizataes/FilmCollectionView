@@ -1,10 +1,3 @@
-//
-//  Movie.swift
-//  NetflixSwift
-//
-//  Created by Deniz Ata Eş on 24.12.2022.
-//
-
 import Foundation
 
 struct TrendingMoviesResponse: Codable {

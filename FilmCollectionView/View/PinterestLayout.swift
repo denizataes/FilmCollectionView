@@ -18,7 +18,7 @@ class PinterestLayout: UICollectionViewLayout
     private var contentWidth: CGFloat {
         let insets = collectionView!.contentInset
         return (collectionView!.bounds.width - (insets.left + insets.right))
-    } // yanlarda çok ufak bir boşluk var onları çıkartıp collectionview ın widthini hesaplıyoruz
+    } // There is a very small gap in the moments, we take them out and calculate the width of the collectionview.
     
     private var attributesCache = [PinterestLayoutAttributes]()
     
@@ -86,8 +86,6 @@ class PinterestLayout: UICollectionViewLayout
         return layoutAttributes
     }
 }
-// UICollectionViewFlowLayout
-// abstract
 
 class PinterestLayoutAttributes: UICollectionViewLayoutAttributes
 {
